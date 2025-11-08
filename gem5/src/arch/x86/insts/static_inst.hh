@@ -111,6 +111,10 @@ class X86StaticInst : public StaticInst
 
     static void printReg(std::ostream &os, RegId reg, int size);
 
+    // Instance helpers (needed by AVX disassembly paths)
+    void printSrcReg(std::ostream &os, int reg, int size) const;
+    void printDestReg(std::ostream &os, int reg, int size) const;
+
   protected:
     using ExtMachInst = X86ISA::ExtMachInst;
 
