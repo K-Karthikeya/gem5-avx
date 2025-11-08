@@ -41,125 +41,133 @@
 #include "arch/x86/regs/segment.hh"
 #include "cpu/reg_class.hh"
 
+namespace gem5
+{
+
 namespace X86ISA
 {
-    void X86StaticInst::printMnemonic(std::ostream &os,
-            const char * mnemonic) const
-    {
-        ccprintf(os, "  %s   ", mnemonic);
-    }
 
-    void X86StaticInst::printMnemonic(std::ostream &os,
-            const char * instMnemonic, const char * mnemonic) const
-    {
-        ccprintf(os, "  %s : %s   ", instMnemonic, mnemonic);
-    }
+using gem5::ccprintf;
 
-    void X86StaticInst::printSegment(std::ostream &os, int segment) const
-    {
-        switch (segment)
-        {
-          case SEGMENT_REG_ES:
-            ccprintf(os, "ES");
-            break;
-          case SEGMENT_REG_CS:
-            ccprintf(os, "CS");
-            break;
-          case SEGMENT_REG_SS:
-            ccprintf(os, "SS");
-            break;
-          case SEGMENT_REG_DS:
-            ccprintf(os, "DS");
-            break;
-          case SEGMENT_REG_FS:
-            ccprintf(os, "FS");
-            break;
-          case SEGMENT_REG_GS:
-            ccprintf(os, "GS");
-            break;
-          case SEGMENT_REG_HS:
-            ccprintf(os, "HS");
-            break;
-          case SEGMENT_REG_TSL:
-            ccprintf(os, "TSL");
-            break;
-          case SEGMENT_REG_TSG:
-            ccprintf(os, "TSG");
-            break;
-          case SEGMENT_REG_LS:
-            ccprintf(os, "LS");
-            break;
-          case SEGMENT_REG_MS:
-            ccprintf(os, "MS");
-            break;
-          case SYS_SEGMENT_REG_TR:
-            ccprintf(os, "TR");
-            break;
-          case SYS_SEGMENT_REG_IDTR:
-            ccprintf(os, "IDTR");
-            break;
-          default:
-            panic("Unrecognized segment %d\n", segment);
-        }
-    }
+void
+X86StaticInst::printMnemonic(std::ostream &os,
+        const char * mnemonic) const
+{
+    ccprintf(os, "  %s   ", mnemonic);
+}
 
-    void
-    X86StaticInst::printSrcReg(std::ostream &os, int reg, int size) const
-    {
-        if (_numSrcRegs > reg)
-            printReg(os, srcRegIdx(reg), size);
-    }
-          gem5::ccprintf(os, "  %s   ", mnemonic);
-    void
-    X86StaticInst::printDestReg(std::ostream &os, int reg, int size) const
-    {
-        if (_numDestRegs > reg)
-            printReg(os, destRegIdx(reg), size);
-          gem5::ccprintf(os, "  %s : %s   ", instMnemonic, mnemonic);
+void
+X86StaticInst::printMnemonic(std::ostream &os,
+        const char * instMnemonic, const char * mnemonic) const
+{
+    ccprintf(os, "  %s : %s   ", instMnemonic, mnemonic);
+}
 
-    void
-    X86StaticInst::printReg(std::ostream &os, RegId reg, int size) const
+void
+X86StaticInst::printSegment(std::ostream &os, int segment) const
+{
+    switch (segment)
     {
+      case segment_idx::Es:
+        ccprintf(os, "ES");
+        break;
+      case segment_idx::Cs:
+        ccprintf(os, "CS");
+        break;
+      case segment_idx::Ss:
+        ccprintf(os, "SS");
+        break;
+      case segment_idx::Ds:
+        ccprintf(os, "DS");
+        break;
+      case segment_idx::Fs:
+        ccprintf(os, "FS");
+        break;
+      case segment_idx::Gs:
+        ccprintf(os, "GS");
+        break;
+      case segment_idx::Hs:
+        ccprintf(os, "HS");
+        break;
+      case segment_idx::Tsl:
+        ccprintf(os, "TSL");
+        break;
+      case segment_idx::Tsg:
+        ccprintf(os, "TSG");
+        break;
+      case segment_idx::Ls:
+        ccprintf(os, "LS");
+        break;
+      case segment_idx::Ms:
+        ccprintf(os, "MS");
+        break;
+      case segment_idx::Tr:
+        ccprintf(os, "TR");
+        break;
+      case segment_idx::Idtr:
+        ccprintf(os, "IDTR");
+        break;
+      default:
+        panic("Unrecognized segment %d\n", segment);
+    }
+}
+
+void
+X86StaticInst::printSrcReg(std::ostream &os, int reg, int size) const
+{
+    if (_numSrcRegs > reg)
+        printReg(os, srcRegIdx(reg), size);
+}
+
+void
+X86StaticInst::printDestReg(std::ostream &os, int reg, int size) const
+{
+    if (_numDestRegs > reg)
+        printReg(os, destRegIdx(reg), size);
+}
+
+void
+X86StaticInst::printReg(std::ostream &os, RegId reg, int size) const
+{
         if (reg.isFloatReg()) {
             // We allow xmm registers to have 128, 256 and 512.
             assert(size == 1 || size == 2 || size == 4 || size == 8 ||
-            gem5::ccprintf(os, "ES");
+                    size == 16 || size == 32 || size == 48 || size == 52 ||
                     size == 64);
         } else {
-            gem5::ccprintf(os, "CS");
+            assert(size == 1 || size == 2 || size == 4 || size == 8);
         }
         static const char * abcdFormats[9] =
-            gem5::ccprintf(os, "SS");
+            {"", "%s",  "%sx",  "", "e%sx", "", "", "", "r%sx"};
         static const char * piFormats[9] =
             {"", "%s",  "%s",   "", "e%s",  "", "", "", "r%s"};
-            gem5::ccprintf(os, "DS");
+        static const char * longFormats[9] =
             {"", "r%sb", "r%sw", "", "r%sd", "", "", "", "r%s"};
         static const char * microFormats[9] =
-            gem5::ccprintf(os, "FS");
+            {"", "t%db", "t%dw", "", "t%dd", "", "", "", "t%d"};
 
         RegIndex reg_idx = reg.index();
-            gem5::ccprintf(os, "GS");
         if (reg.isIntReg()) {
             const char * suffix = "";
-            gem5::ccprintf(os, "HS");
+            bool fold = reg_idx & IntFoldBit;
             reg_idx &= ~IntFoldBit;
 
-            gem5::ccprintf(os, "TSL");
+            if (fold)
                 suffix = "h";
             else if (reg_idx < 8 && size == 1)
-            gem5::ccprintf(os, "TSG");
+                suffix = "b";
 
             switch (reg_idx) {
-            gem5::ccprintf(os, "LS");
+              case INTREG_RAX:
                 ccprintf(os, abcdFormats[size], "a");
                 break;
-            gem5::ccprintf(os, "MS");
+              case INTREG_RBX:
                 ccprintf(os, abcdFormats[size], "b");
                 break;
-            gem5::ccprintf(os, "TR");
+              case INTREG_RCX:
                 ccprintf(os, abcdFormats[size], "c");
                 break;
-            gem5::ccprintf(os, "IDTR");
+              case INTREG_RDX:
                 ccprintf(os, abcdFormats[size], "d");
                 break;
               case INTREG_RSP:
@@ -232,53 +240,58 @@ namespace X86ISA
             }
         }
     }
+}
 
-    void X86StaticInst::printMem(std::ostream &os, uint8_t segment,
-            uint8_t scale, RegIndex index, RegIndex base,
-            uint64_t disp, uint8_t addressSize, bool rip) const
-    {
-        bool someAddr = false;
-        printSegment(os, segment);
-        os << ":[";
-        if (rip) {
-            os << "rip";
+void
+X86StaticInst::printMem(std::ostream &os, uint8_t segment,
+        uint8_t scale, RegIndex index, RegIndex base,
+        uint64_t disp, uint8_t addressSize, bool rip) const
+{
+    bool someAddr = false;
+    printSegment(os, segment);
+    os << ":[";
+    if (rip) {
+        os << "rip";
+        someAddr = true;
+    } else {
+        if (scale != 0 && index != int_reg::Zero)
+        {
+            if (scale != 1)
+                ccprintf(os, "%d*", scale);
+            printReg(os, InstRegIndex(index), addressSize);
             someAddr = true;
-        } else {
-            if (scale != 0 && index != ZeroReg)
-            {
-                if (scale != 1)
-                    ccprintf(os, "%d*", scale);
-                printReg(os, InstRegIndex(index), addressSize);
-                someAddr = true;
-            }
-            if (base != ZeroReg)
-            {
-                if (someAddr)
-                    os << " + ";
-                printReg(os, InstRegIndex(base), addressSize);
-                someAddr = true;
-            }
         }
-        if (disp != 0)
+        if (base != int_reg::Zero)
         {
             if (someAddr)
                 os << " + ";
-            ccprintf(os, "%#x", disp);
+            printReg(os, InstRegIndex(base), addressSize);
             someAddr = true;
         }
-        if (!someAddr)
-            os << "0";
-        os << "]";
     }
-
-    std::string
-    X86StaticInst::generateDisassembly(
-            Addr pc, const Loader::SymbolTable *symtab) const
+    if (disp != 0)
     {
-        std::stringstream ss;
-
-        printMnemonic(ss, mnemonic);
-
-        return ss.str();
+        if (someAddr)
+            os << " + ";
+        ccprintf(os, "%#x", disp);
+        someAddr = true;
     }
+    if (!someAddr)
+        os << "0";
+    os << "]";
 }
+
+std::string
+X86StaticInst::generateDisassembly(
+        Addr pc, const Loader::SymbolTable *symtab) const
+{
+    std::stringstream ss;
+
+    printMnemonic(ss, mnemonic);
+
+    return ss.str();
+}
+
+} // namespace X86ISA
+
+} // namespace gem5
