@@ -5,6 +5,7 @@
 #include <cstdint>
 
 #include "arch/x86/insts/microop.hh"
+#include "arch/x86/regs/float.hh"
 #include "arch/x86/regs/int.hh"
 #include "arch/x86/regs/misc.hh"
 #include "cpu/exec_context.hh"

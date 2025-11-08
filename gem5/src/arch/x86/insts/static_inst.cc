@@ -238,9 +238,8 @@ X86StaticInst::printReg(std::ostream &os, RegId reg, int size)
               default:
                 ccprintf(os, "%%ctrl%d", reg_idx);
             }
-        }
     }
-}
+  }
 
 void
 X86StaticInst::printMem(std::ostream &os, uint8_t segment,
