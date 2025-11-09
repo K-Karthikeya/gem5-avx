@@ -321,9 +321,11 @@ Decoder::doVexOpcodeState(uint8_t nextByte)
 
     switch (emi.opcode.type) {
       case TwoByteOpcode:
-        // Use existing two-byte opcode tables; the ISA decoder will
-        // differentiate legacy vs VEX via VEX_PRESENT and select the
-        // appropriate decode state ('TwoByteOpcodeVEX') for VEX ops.
+        // Use the same opcode tables but with VEX_PRESENT set; the
+        // generated decoder (via two_byte_opcodes_vex.isa include)
+        // will dispatch to the VEX variants.
+        DPRINTF(Decoder, "VEX dispatch: type=TwoByte op=%#x L=%u present=%u\n",
+                emi.opcode.op, (unsigned)emi.evex.l, (unsigned)emi.evex.vex_present);
         return processOpcode(ImmediateTypeTwoByte, UsesModRMTwoByte);
       case ThreeByte0F38Opcode:
         return processOpcode(ImmediateTypeThreeByte0F38,
