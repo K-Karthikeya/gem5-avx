@@ -127,10 +127,9 @@ let {{
 
     class vaddf(varithp):
         opClass = 'SimdFloatAddOp'
-        code = '''
-                fprintf(stderr, "[AVX-TRACE] vaddf enter VL=%u size=%u\n", destVL, srcSize);
-                this->doPackedBinaryOp(xc, BinaryOp::FloatAdd);
-                '''
+        # Keep code on a single line to avoid any accidental C++ string literal
+        # termination issues during ISA code generation.
+        code = 'fprintf(stderr, "[AVX-TRACE] vaddf enter VL=%u size=%u\\n", destVL, srcSize); this->doPackedBinaryOp(xc, BinaryOp::FloatAdd);'
 
     class vmulf(varithp):
         opClass = 'SimdFloatMultOp'
