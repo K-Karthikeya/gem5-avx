@@ -117,13 +117,8 @@ let {{
             auto vRegs = destVL / sizeof(uint64_t);
             _numSrcRegs = 2 * vRegs;
             // AVX sources are floating-point vector subregister chunks.
-            // We must also update the typed source register count so the
-            // generic register access helpers (getRegOperand/setRegOperand)
-            // index the correct architectural float registers. Without
-            // this, the source register class count is zero and operand
-            // fetch returns incorrect (often zero) values, leading to
-            // wrong arithmetic results (e.g., VADDPS lane mismatches).
-            _numTypedSrcRegs[FloatRegClass] = 2 * vRegs;
+            // No per-type source register accounting exists in StaticInst;
+            // setSrcRegIdx with RegId(floatRegClass, ...) is sufficient.
             for (int i = 0; i < vRegs; ++i) {
                 setSrcRegIdx(i*2, RegId(floatRegClass, src1 + i));
                 setSrcRegIdx(i*2+1, RegId(floatRegClass, src2 + i));
