@@ -230,14 +230,20 @@ protected:
   // A helper function to perform packed src1 op src2
   inline void doPackedBinaryOp(gem5::ExecContext *xc, BinaryOp op) const
   {
+    // Each logical element (4 or 8 bytes) lives inside one or more 64-bit
+    // sub-registers. We currently map one 64-bit subregister per iteration.
+    // For 128-bit ops destVL=16 => vRegs=2 (two 64b pieces). For 256-bit ops
+    // destVL=32 => vRegs=4.
+    // Our constructor registered sources in the order:
+    //   [src1(sub0), src2(sub0), src1(sub1), src2(sub1), ...]
+    // So source indices are interleaved per subregister chunk.
     auto vRegs = destVL / sizeof(uint64_t);
-    FloatInt src1;
-    FloatInt src2;
     for (int i = 0; i < vRegs; i++) {
-      src1.ul = xc->getRegOperand(this, i * 2 + 0);
-      src2.ul = xc->getRegOperand(this, i * 2 + 1);
-      auto dest = this->calcPackedBinaryOp(src1, src2, op);
-      xc->setRegOperand(this, i, dest.ul);
+      FloatInt s1, s2;
+      s1.ul = xc->getRegOperand(this, i * 2 + 0);
+      s2.ul = xc->getRegOperand(this, i * 2 + 1);
+      auto d = this->calcPackedBinaryOp(s1, s2, op);
+      xc->setRegOperand(this, i, d.ul);
     }
   }
 
