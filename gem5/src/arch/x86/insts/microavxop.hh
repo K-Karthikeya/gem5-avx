@@ -29,6 +29,13 @@ public:
     RegRegReg, // Three opreands.
   };
 
+  // Ensure we see size() calls for AVX microops specifically.
+  void size(size_t newSize) override {
+    fprintf(stderr, "[AVXOP-SIZE] inst=%s micro=%s this=%p newSize=%zu\n",
+            instMnem, mnemonic, (void*)this, newSize);
+    X86MicroopBase::size(newSize);
+  }
+
 protected:
   const SrcType srcType;
   const RegIndex dest;
