@@ -118,6 +118,14 @@ class X86MicroopBase : public X86StaticInst
         }
     }
 
+    // Instrument size propagation to catch microops that corrupt state.
+    void size(size_t newSize) override
+    {
+        fprintf(stderr, "[MICROOP-SIZE] mnem=%s instMnem=%s flagsFirst=%d flagsLast=%d newSize=%zu this=%p\n",
+                mnemonic, instMnem, (int)flags[IsFirstMicroop], (int)flags[IsLastMicroop], newSize, (void*)this);
+        X86StaticInst::size(newSize);
+    }
+
     std::string
     generateDisassembly(Addr pc,
                        const loader::SymbolTable *symtab) const override

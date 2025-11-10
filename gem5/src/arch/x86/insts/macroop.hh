@@ -115,9 +115,12 @@ class MacroopBase : public X86StaticInst
                 fprintf(stderr, "[MACROOP-SIZE] ERROR: microop[%d] is NULL!\n", i);
                 panic("NULL microop at index %d in macroop %s\n", i, mnemonic);
             }
+            fprintf(stderr, "[MACROOP-SIZE] -> calling microop[%d]->size(%zu)\n", i, newSize);
             microops[i]->size(newSize);
+            fprintf(stderr, "[MACROOP-SIZE] <- returned microop[%d]->size(%zu)\n", i, newSize);
         }
         _size = newSize;
+        fprintf(stderr, "[MACROOP-SIZE] complete for %s\n", mnemonic);
     }
 };
 
