@@ -94,7 +94,7 @@ let {{
 
     class AVXOp(X86Microop, metaclass=AVXOpMeta):
         abstract = True
-        def __init__(self, dest, src1='RegId(floatRegClass, 0)', src2='RegId(floatRegClass, 0)',
+        def __init__(self, dest, src1='X86ISA::FpRegIndex(0)', src2='X86ISA::FpRegIndex(0)',
                      destSize=0, destVL=16, srcSize=0, srcVL=16,
                      imm8=0, ext=0):
             self.dest = dest; self.src1 = src1; self.src2 = src2
