@@ -51,6 +51,8 @@ protected:
         srcType(_srcType), dest(_dest.index()), src1(_src1.index()),
         src2(_src2.index()), destSize(_destSize), destVL(_destVL),
         srcSize(_srcSize), srcVL(_srcVL), imm8(_imm8), ext(_ext) {
+    fprintf(stderr, "[AVX-CONSTRUCT] mnem=%s destVL=%u srcVL=%u dest=%u src1=%u src2=%u\n",
+            _mnem, destVL, srcVL, dest, src1, src2);
     assert((destVL % sizeof(uint64_t) == 0) && "Invalid destVL.\n");
     assert((srcVL % sizeof(uint64_t) == 0) && "Invalid srcVL.\n");
   }
@@ -288,10 +290,13 @@ protected:
   // A helper function to add dest regs.
   inline void addAVXDestRegs() {
     auto vDestRegs = destVL / sizeof(uint64_t);
+    fprintf(stderr, "[AVX-DESTREGS] destVL=%u vDestRegs=%d dest=%u\n", 
+            destVL, vDestRegs, dest);
     assert(vDestRegs <= NumXMMSubRegs && "DestVL overflow.");
     _numDestRegs = vDestRegs;
     _numTypedDestRegs[FloatRegClass] = vDestRegs;
     for (int i = 0; i < vDestRegs; i++) {
+      fprintf(stderr, "[AVX-DESTREGS]   reg[%d] = FloatReg %u\n", i, dest + i);
       setDestRegIdx(i, RegId(floatRegClass, dest + i));
     }
   }

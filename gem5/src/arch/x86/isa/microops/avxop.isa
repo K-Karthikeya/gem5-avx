@@ -117,11 +117,16 @@ let {{
         def __init__(self, dest, destVL):
             super().__init__(dest=dest, destVL=destVL, destSize=destVL)
         constructorCode = """
+            fprintf(stderr, "[VCLEAR-CONSTRUCT] dest=%u destVL=%u\\n", 
+                    (unsigned)dest, (unsigned)destVL);
             auto vRegs = destVL / sizeof(uint64_t);
             _numDestRegs = vRegs;
             _numTypedDestRegs[FloatRegClass] = vRegs;
-            for (int i = 0; i < _numDestRegs; ++i)
+            for (int i = 0; i < _numDestRegs; ++i) {
+                fprintf(stderr, "[VCLEAR-CONSTRUCT]   reg[%d] = FloatReg %u\\n", 
+                        i, (unsigned)(dest + i));
                 setDestRegIdx(i, RegId(floatRegClass, dest + i));
+            }
         """
         code = """
             for (int i = 0; i < _numDestRegs; ++i)
