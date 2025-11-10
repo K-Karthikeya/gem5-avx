@@ -42,6 +42,7 @@
 #include "arch/x86/insts/static_inst.hh"
 #include "arch/x86/emulenv.hh"
 #include "arch/x86/types.hh"
+#include <typeinfo>
 
 namespace gem5
 {
@@ -114,6 +115,18 @@ class MacroopBase : public X86StaticInst
             if (!microops[i]) {
                 fprintf(stderr, "[MACROOP-SIZE] ERROR: microop[%d] is NULL!\n", i);
                 panic("NULL microop at index %d in macroop %s\n", i, mnemonic);
+            }
+            // Inspect vtable pointer and a few leading bytes for corruption diagnosis.
+            void **rawPtr = reinterpret_cast<void**>(microops[i].get());
+            void *vtablePtr = rawPtr ? rawPtr[0] : nullptr;
+            fprintf(stderr, "[MACROOP-SIZE]   microop[%d] vtable=%p\n", i, vtablePtr);
+            // Dump first 32 bytes (up to four pointers) of the object (best-effort, may fault if corrupted).
+            if (rawPtr) {
+                uintptr_t *u64 = reinterpret_cast<uintptr_t*>(rawPtr);
+                fprintf(stderr, "[MACROOP-SIZE]   microop[%d] mem[0..3]=%#016lx %#016lx %#016lx %#016lx\n",
+                        i,
+                        (unsigned long)(u64[0]), (unsigned long)(u64[1]),
+                        (unsigned long)(u64[2]), (unsigned long)(u64[3]));
             }
             fprintf(stderr, "[MACROOP-SIZE] -> calling microop[%d]->size(%zu)\n", i, newSize);
             microops[i]->size(newSize);
