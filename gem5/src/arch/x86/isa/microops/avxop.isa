@@ -119,14 +119,8 @@ let {{
         constructorCode = """
             fprintf(stderr, "[VCLEAR-CONSTRUCT] dest=%u destVL=%u\\n", 
                     (unsigned)dest, (unsigned)destVL);
-            auto vRegs = destVL / sizeof(uint64_t);
-            _numDestRegs = vRegs;
-            _numTypedDestRegs[FloatRegClass] = vRegs;
-            for (int i = 0; i < _numDestRegs; ++i) {
-                fprintf(stderr, "[VCLEAR-CONSTRUCT]   reg[%d] = FloatReg %u\\n", 
-                        i, (unsigned)(dest + i));
-                setDestRegIdx(i, RegId(floatRegClass, dest + i));
-            }
+            // Use the standard AVX destination register setup instead of manual manipulation
+            this->addAVXDestRegs();
         """
         code = """
             for (int i = 0; i < _numDestRegs; ++i)
