@@ -11,17 +11,17 @@
         // env.regm distinctly (needed so xmm0 dest and xmm0m src2 differ).
         // gem5 treats all reg-reg forms as implicit R forms (no M operand).
         0x58: decode VEX_L {
-            // Reg-reg: V selects dest from ModRM.reg (XMM class), W selects src2 from ModRM.rm
-            0x1: VADDPS_YMM_YMM(V, W);
-            0x0: VADDPS_XMM_XMM(V, W);
+            // Reg-reg: use Vo (XMM reg via ModRM.reg) and Wo (XMM reg/mem via ModRM.r/m)
+            0x1: VADDPS_YMM_YMM(Vo, Wo);
+            0x0: VADDPS_XMM_XMM(Vo, Wo);
         }
         0x59: decode VEX_L {
-            0x1: VMULPS_YMM_YMM(V, W);
-            0x0: VMULPS_XMM_XMM(V, W);
+            0x1: VMULPS_YMM_YMM(Vo, Wo);
+            0x0: VMULPS_XMM_XMM(Vo, Wo);
         }
         0x57: decode VEX_L {
-            0x1: VXORPS_YMM_YMM(V, W);
-            0x0: VXORPS_XMM_XMM(V, W);
+            0x1: VXORPS_YMM_YMM(Vo, Wo);
+            0x0: VXORPS_XMM_XMM(Vo, Wo);
         }
         // Load from memory (M operand triggers doModRM via specializeInst)
         0x10: decode VEX_L {
