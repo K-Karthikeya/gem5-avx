@@ -137,8 +137,8 @@ let {{
             this->addAVXDestRegs();
             auto vRegs = destVL / sizeof(uint64_t);
             fprintf(stderr,
-                    "[AVX-SRCMAP] inst=%s destBase=%u src1Base=%u src2Base=%u vRegs=%u\n",
-                    instMnem,
+            "[AVX-SRCMAP] inst=%s destBase=%u src1Base=%u src2Base=%u vRegs=%u\\n",
+            _instMnem,
                     (unsigned)dest, (unsigned)src1, (unsigned)src2, (unsigned)vRegs);
             _numSrcRegs = 2 * vRegs;
             // AVX sources are floating-point vector subregister chunks.
@@ -146,7 +146,7 @@ let {{
             // setSrcRegIdx with RegId(floatRegClass, ...) is sufficient.
             for (int i = 0; i < vRegs; ++i) {
                 fprintf(stderr,
-                        "[AVX-SRCMAP] lane=%d destIdx=%u src1Idx=%u src2Idx=%u\n",
+                        "[AVX-SRCMAP] lane=%d destIdx=%u src1Idx=%u src2Idx=%u\\n",
                         i,
                         (unsigned)(dest + i), (unsigned)(src1 + i), (unsigned)(src2 + i));
                 setSrcRegIdx(i*2, RegId(floatRegClass, src1 + i));
