@@ -14,6 +14,28 @@ def template AVXOpExecute {{
     }
 }};
 
+def template AVXOpDeclare {{
+        class %(class_name)s : public %(base_class)s
+        {
+            public:
+                // Main constructor (RegId version)
+                %(class_name)s(ExtMachInst _machInst, const char *_instMnem,
+                                             uint64_t _setFlags, SrcType _srcType,
+                                             RegId _dest, RegId _src1,
+                                             RegId _src2, uint8_t _destSize, uint8_t _destVL,
+                                             uint8_t _srcSize, uint8_t _srcVL,
+                                             uint8_t _imm8, uint8_t _ext);
+                // Compatibility constructor (FpRegIndex version - converts to RegId)
+                %(class_name)s(ExtMachInst _machInst, const char *_instMnem,
+                                             uint64_t _setFlags, SrcType _srcType,
+                                             FpRegIndex _dest, FpRegIndex _src1,
+                                             FpRegIndex _src2, uint8_t _destSize, uint8_t _destVL,
+                                             uint8_t _srcSize, uint8_t _srcVL,
+                                             uint8_t _imm8, uint8_t _ext);
+                Fault execute(ExecContext *, trace::InstRecord *) const;
+        };
+}};
+
 def template AVXOpConstructor {{
     %(class_name)s::%(class_name)s(ExtMachInst _machInst, const char *_instMnem,
         uint64_t _setFlags, SrcType _srcType,
@@ -156,15 +178,16 @@ let {{
 
     class vaddf(varithp):
         opClass = 'SimdFloatAddOp'
-        # Keep code on a single line to avoid any accidental C++ string literal
-        # termination issues during ISA code generation.
+        constructorCode = varithp.constructorCode
         code = 'fprintf(stderr, "[AVX-TRACE] vaddf enter VL=%u size=%u\\n", destVL, srcSize); this->doPackedBinaryOp(xc, BinaryOp::FloatAdd);'
 
     class vmulf(varithp):
         opClass = 'SimdFloatMultOp'
+        constructorCode = varithp.constructorCode
         code = 'fprintf(stderr, "[AVX-TRACE] vmulf enter VL=%u size=%u\\n", destVL, srcSize); this->doPackedBinaryOp(xc, BinaryOp::FloatMul);'
 
     class vxorf(varithp):
         opClass = 'SimdAddOp'
+        constructorCode = varithp.constructorCode
         code = 'fprintf(stderr, "[AVX-TRACE] vxorf enter VL=%u size=%u\\n", destVL, srcSize); this->doPackedBinaryOp(xc, BinaryOp::IntXor);'
 }};
