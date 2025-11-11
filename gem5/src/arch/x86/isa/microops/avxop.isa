@@ -139,16 +139,16 @@ let {{
         constructorCode = """
         // Raw decode field dump before mapping
         fprintf(stderr,
-            "[AVX-RAW] inst=%s vexType=%u modrm=%#x mod=%u reg=%u rm=%u vvvv=%u L=%u pp=%u\\n",
+            "[AVX-RAW] inst=%s opcodeType=%u modrm=%#x mod=%u reg=%u rm=%u vvvv=%u L=%u evex=%#x\\n",
             _instMnem,
-            (unsigned)_machInst.vex_prefix,
+            (unsigned)_machInst.opcode.type,
             (unsigned)(uint8_t)_machInst.modRM,
             (unsigned)_machInst.modRM.mod,
             (unsigned)_machInst.modRM.reg,
             (unsigned)_machInst.modRM.rm,
             (unsigned)_machInst.evex.v_extend,
-            (unsigned)_machInst.evex.L,
-            (unsigned)_machInst.evex.pp);
+            (unsigned)_machInst.evex.l,
+            (unsigned)(uint16_t)_machInst.evex);
 
         fprintf(stderr,
             "[AVX-RAW] ctor RegIds dest=%u src1=%u src2=%u\\n",
