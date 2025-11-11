@@ -510,8 +510,12 @@ let {{
                       'Request::READ_MODIFY_WRITE | Request::LOCKED_RMW',
                       nonSpec=True)
 
-    defineMicroLoadOp('Ldfp', code='FpData_uqw = Mem', big=False,
-            is_float=True)
+    defineMicroLoadOp('Ldfp', code='''
+        FpData_uqw = Mem;
+        fprintf(stderr, "[LDFP-EXEC] EA=%#lx loaded=%#016llx dest=FloatReg %u\\n",
+                (unsigned long)EA, (unsigned long long)Mem,
+                (unsigned)destRegIdx(0).index());
+    ''', big=False, is_float=True)
 
     # Used to implement AVX2 load, only used with 32/64-byte data.
     defineMicroLoadOp('ldfp128', code='''
@@ -657,7 +661,12 @@ let {{
     defineMicroStoreOp('Stis', 'Mem = PData;')
     defineMicroStoreOp('Stul', 'Mem = PData;', mem_flags="Request::LOCKED_RMW")
 
-    defineMicroStoreOp('Stfp', code='Mem = FpData_uqw;', is_float=True)
+    defineMicroStoreOp('Stfp', code='''
+        fprintf(stderr, "[STFP-EXEC] src=FloatReg %u value=%#016llx EA=%#lx\\n",
+                (unsigned)srcRegIdx(0).index(),
+                (unsigned long long)FpData_uqw, (unsigned long)EA);
+        Mem = FpData_uqw;
+    ''', is_float=True)
 
     # Used to implement AVX2.
     defineMicroStoreOp('stfp128', code='''
