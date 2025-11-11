@@ -77,3 +77,6 @@ rip_source:
     .long 0x40c00000  # 6.0f
     .long 0x40e00000  # 7.0f
     .long 0x41000000  # 8.0f
+
+    # Mark that this object does not require an executable stack
+    .section .note.GNU-stack,"",@progbits
