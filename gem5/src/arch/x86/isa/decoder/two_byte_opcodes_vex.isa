@@ -6,6 +6,7 @@
 
 'X86ISA::TwoByteOpcodeVEX': decode OPCODE_OP {
     format Inst {
+        // Arithmetic ops (reg-reg only, no memory form, no ModRM needed)
         0x58: decode VEX_L {
             0x1: VADDPS_YMM_YMM();
             0x0: VADDPS_XMM_XMM();
@@ -18,21 +19,23 @@
             0x1: VXORPS_YMM_YMM();
             0x0: VXORPS_XMM_XMM();
         }
+        // Load from memory (M operand triggers doModRM via specializeInst)
         0x10: decode VEX_L {
-            0x1: VMOVUPS_YMM_M();
-            0x0: VMOVUPS_XMM_M();
+            0x1: VMOVUPS_YMM(M);
+            0x0: VMOVUPS_XMM(M);
         }
+        // Store to memory (M operand triggers doModRM via specializeInst)
         0x11: decode VEX_L {
-            0x1: VMOVUPS_M_YMM();
-            0x0: VMOVUPS_M_XMM();
+            0x1: VMOVUPS_M_YMM(M);
+            0x0: VMOVUPS_M_XMM(M);
         }
         0x28: decode VEX_L {
-            0x1: VMOVAPS_YMM_M();
-            0x0: VMOVAPS_XMM_M();
+            0x1: VMOVAPS_YMM(M);
+            0x0: VMOVAPS_XMM(M);
         }
         0x29: decode VEX_L {
-            0x1: VMOVAPS_M_YMM();
-            0x0: VMOVAPS_M_XMM();
+            0x1: VMOVAPS_M_YMM(M);
+            0x0: VMOVAPS_M_XMM(M);
         }
         0x77: VZEROUPPER();
         default: UD2();
