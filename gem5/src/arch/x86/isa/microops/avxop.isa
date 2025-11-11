@@ -137,6 +137,23 @@ let {{
             super().__init__(dest=dest, src1=src1, src2=src2,
                              destSize=size, destVL=VL, srcSize=size, srcVL=VL)
         constructorCode = """
+        // Raw decode field dump before mapping
+        fprintf(stderr,
+            "[AVX-RAW] inst=%s vexType=%u modrm=%#x mod=%u reg=%u rm=%u vvvv=%u L=%u pp=%u\\n",
+            _instMnem,
+            (unsigned)_machInst.vex_prefix,
+            (unsigned)(uint8_t)_machInst.modRM,
+            (unsigned)_machInst.modRM.mod,
+            (unsigned)_machInst.modRM.reg,
+            (unsigned)_machInst.modRM.rm,
+            (unsigned)_machInst.evex.v_extend,
+            (unsigned)_machInst.evex.L,
+            (unsigned)_machInst.evex.pp);
+
+        fprintf(stderr,
+            "[AVX-RAW] ctor RegIds dest=%u src1=%u src2=%u\\n",
+            (unsigned)dest, (unsigned)src1, (unsigned)src2);
+
         // Register destination subregister chunks (contiguous) first.
         this->addAVXDestRegs();
 
