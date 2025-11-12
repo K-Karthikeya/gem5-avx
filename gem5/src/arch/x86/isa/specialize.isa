@@ -227,11 +227,16 @@ let {{
                 # This might refer to memory or to a register. We need to
                 # divide it up farther.
                 regEnv = copy.copy(env)
-                # Revert earlier attempt to force W operands into env.regm to
-                # prevent exhausting register specialization slots for common
-                # SSE/SSE2 instructions (e.g., MOVUPS). Arithmetic AVX src2 now
-                # uses explicit RM-based symbols added in microasm.isa instead
-                # of relying on env.regm.
+                # Guarded use of env.regm for AVX packed arithmetic only:
+                # We need the ModRM.rm register exposed separately (env.regm)
+                # so macroops using xmm0m map src2 correctly. Doing this for
+                # all W operands (e.g. MOVUPS) exhausts specialization slots,
+                # so restrict to VADDPS / VMULPS / VXORPS macroop families.
+                if opType.tag == "W" and (
+                    Name.startswith("VADDPS") or
+                    Name.startswith("VMULPS") or
+                    Name.startswith("VXORPS")):
+                    regEnv.regmUsed = True
                 regEnv.addReg(ModRMRMIndex)
 
                 # This refers to memory. The macroop constructor should set up
