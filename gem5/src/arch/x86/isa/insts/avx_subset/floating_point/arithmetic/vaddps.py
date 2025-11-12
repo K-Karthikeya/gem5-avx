@@ -1,12 +1,11 @@
 microcode = '''
 def macroop VADDPS_XMM_XMM {
-    # Use base subregister (sub=0) for all operands; vclear clears upper 128.
-    vaddf dest=xmm0, src1=xmm0v, src2=xmm0m, size=4, VL=16
+    # src2 provided directly via ModRM.rm (xmmrm) avoiding env.regm usage.
+    vaddf dest=xmm0, src1=xmm0v, src2=xmmrm, size=4, VL=16
     vclear dest=xmm2, destVL=16
 };
 def macroop VADDPS_XMM_XMM_XMM_XMM {
-    # Alias to support decode specialization suffixes (V, W)
-    vaddf dest=xmm0, src1=xmm0v, src2=xmm0m, size=4, VL=16
+    vaddf dest=xmm0, src1=xmm0v, src2=xmmrm, size=4, VL=16
     vclear dest=xmm2, destVL=16
 };
 def macroop VADDPS_XMM_M {
@@ -40,11 +39,10 @@ def macroop VADDPS_XMM_XMM_XMM_P {
     vclear dest=xmm2, destVL=16
 };
 def macroop VADDPS_YMM_YMM {
-    vaddf dest=xmm0, src1=xmm0v, src2=xmm0m, size=4, VL=32
+    vaddf dest=xmm0, src1=xmm0v, src2=xmmrm, size=4, VL=32
 };
 def macroop VADDPS_YMM_YMM_XMM_XMM {
-    # Alias to support decode specialization suffixes (V, W)
-    vaddf dest=xmm0, src1=xmm0v, src2=xmm0m, size=4, VL=32
+    vaddf dest=xmm0, src1=xmm0v, src2=xmmrm, size=4, VL=32
 };
 def macroop VADDPS_YMM_M {
     ldfp ufp0, seg, sib, "DISPLACEMENT", dataSize=8

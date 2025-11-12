@@ -1,10 +1,10 @@
 microcode = '''
 def macroop VXORPS_XMM_XMM {
-    vxorf dest=xmm0, src1=xmm0v, src2=xmm0m, size=4, VL=16
+    vxorf dest=xmm0, src1=xmm0v, src2=xmmrm, size=4, VL=16
     vclear dest=xmm2, destVL=16
 };
 def macroop VXORPS_XMM_XMM_XMM_XMM {
-    vxorf dest=xmm0, src1=xmm0v, src2=xmm0m, size=4, VL=16
+    vxorf dest=xmm0, src1=xmm0v, src2=xmmrm, size=4, VL=16
     vclear dest=xmm2, destVL=16
 };
 def macroop VXORPS_XMM_M {
@@ -38,10 +38,10 @@ def macroop VXORPS_XMM_XMM_XMM_P {
     vclear dest=xmm2, destVL=16
 };
 def macroop VXORPS_YMM_YMM {
-    vxorf dest=xmm0, src1=xmm0v, src2=xmm0m, size=4, VL=32
+    vxorf dest=xmm0, src1=xmm0v, src2=xmmrm, size=4, VL=32
 };
 def macroop VXORPS_YMM_YMM_XMM_XMM {
-    vxorf dest=xmm0, src1=xmm0v, src2=xmm0m, size=4, VL=32
+    vxorf dest=xmm0, src1=xmm0v, src2=xmmrm, size=4, VL=32
 };
 def macroop VXORPS_YMM_M {
     ldfp ufp0, seg, sib, "DISPLACEMENT", dataSize=8
