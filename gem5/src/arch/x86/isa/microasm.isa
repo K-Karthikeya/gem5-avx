@@ -166,6 +166,13 @@ let {{
     }
     assembler.symbols.update(symbols)
 
+    # Provide direct ModRM.rm-based XMM/YMM base register symbols (avoid env.regm).
+    # This lets AVX reg-reg arithmetic bind src2 without consuming an extra
+    # specialization slot. Each expands to the first 64-bit subregister of
+    # the ModRM.rm-selected architectural vector register; varithp will add
+    # subsequent lanes by simple +i.
+    assembler.symbols["xmmrm"] = regIdx("FLOATREG_XMM_IDX((MODRM_RM | (REX_B << 3)), 0)")
+
     assembler.symbols["ldsz"] = \
         "((env.dataSize == 8) ? 3 : (env.dataSize == 4) ? 2 : 1)"
 

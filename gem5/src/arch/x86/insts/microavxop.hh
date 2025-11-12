@@ -259,17 +259,19 @@ protected:
     // sub-registers. We currently map one 64-bit subregister per iteration.
     // For 128-bit ops destVL=16 => vRegs=2 (two 64b pieces). For 256-bit ops
     // destVL=32 => vRegs=4.
-    // Our constructor registered sources in the order:
-    //   [src1(sub0), src2(sub0), src1(sub1), src2(sub1), ...]
-    // So source indices are interleaved per subregister chunk.
+  // Operand index ordering within StaticInst is:
+  //   [dest0..destN-1, src10..src1N-1, src20..src2N-1]
+  // i.e., all destination operands first, then all src1 lanes, then all src2 lanes.
+    // Therefore, when reading sources use the source operand indices starting at 0
+    // (i.e., [src10..src1N-1, src20..src2N-1]) without any destination offset.
     auto vRegs = destVL / sizeof(uint64_t);
     for (int i = 0; i < vRegs; i++) {
       FloatInt s1, s2;
-      s1.ul = xc->getRegOperand(this, i * 2 + 0);
-      s2.ul = xc->getRegOperand(this, i * 2 + 1);
+      // With sources registered as [src1(0..N-1), src2(0..N-1)] starting at index 0
+      s1.ul = xc->getRegOperand(this, i);
+      s2.ul = xc->getRegOperand(this, vRegs + i);
       auto d = this->calcPackedBinaryOp(s1, s2, op);
       if (op == BinaryOp::FloatAdd) {
-        // Unconditional instrumentation to diagnose lane mismatch issues.
         // Each 64-bit chunk carries two 32-bit floats in order {f1,f2}.
         fprintf(stderr,
           "[AVX-TRACE] add chunk=%d raw_s1=%#016llx raw_s2=%#016llx f1={%g,%g} f2={%g,%g} result={%g,%g}\n",
@@ -279,6 +281,23 @@ protected:
           s1.f.f1, s1.f.f2,
           s2.f.f1, s2.f.f2,
           d.f.f1, d.f.f2);
+      } else if (op == BinaryOp::FloatMul) {
+        fprintf(stderr,
+          "[AVX-TRACE] mul chunk=%d raw_s1=%#016llx raw_s2=%#016llx f1={%g,%g} f2={%g,%g} result={%g,%g}\n",
+          i,
+          (unsigned long long)s1.ul,
+          (unsigned long long)s2.ul,
+          s1.f.f1, s1.f.f2,
+          s2.f.f1, s2.f.f2,
+          d.f.f1, d.f.f2);
+      } else if (op == BinaryOp::IntXor) {
+        // For XOR, print raw hex values before/after.
+        fprintf(stderr,
+          "[AVX-TRACE] xor chunk=%d raw_s1=%#016llx raw_s2=%#016llx result_raw=%#016llx\n",
+          i,
+          (unsigned long long)s1.ul,
+          (unsigned long long)s2.ul,
+          (unsigned long long)d.ul);
       }
       xc->setRegOperand(this, i, d.ul);
       if (op == BinaryOp::FloatAdd) {
@@ -288,6 +307,17 @@ protected:
         fprintf(stderr,
           "[AVX-TRACE] stored chunk=%d raw=%#016llx asFloats={%g,%g}\n",
           i, (unsigned long long)stored, verify.f.f1, verify.f.f2);
+      } else if (op == BinaryOp::FloatMul) {
+        uint64_t stored = xc->getRegOperand(this, i);
+        FloatInt verify; verify.ul = stored;
+        fprintf(stderr,
+          "[AVX-TRACE] stored chunk=%d raw=%#016llx asFloats={%g,%g}\n",
+          i, (unsigned long long)stored, verify.f.f1, verify.f.f2);
+      } else if (op == BinaryOp::IntXor) {
+        uint64_t stored = xc->getRegOperand(this, i);
+        fprintf(stderr,
+          "[AVX-TRACE] stored chunk=%d raw=%#016llx\n",
+          i, (unsigned long long)stored);
       }
     }
   }
